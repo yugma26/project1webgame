@@ -9,10 +9,20 @@ const words = [
     'VUE'
   ];
 
+  // Define the maximum number of incorrect guesses allowed
+   const maxWrongGuesses = 6;
+
+    let wordToGuess = '';
+    let guessedLetters = [];
+    let wrongGuesses = 0;
+    let imageCount = 1;
+
+  // Select random word from the list
   function selectRandomWord() {
     return words[Math.floor(Math.random() * words.length)];
   }
-
+  
+  // Initialize the game
   function initializeGame() {
     wordToGuess = selectRandomWord();
     guessedLetters = Array(wordToGuess.length).fill('_');
@@ -50,6 +60,7 @@ const words = [
     wordContainer.innerText = guessedLetters.join(' ');
   }
 
+  // Handle a letter guess
   function handleGuess(letter) {
     // If the letter has already been guessed, do nothing
     if (guessedLetters.includes(letter)) {
@@ -76,8 +87,35 @@ const words = [
     checkWinOrLose();
   }
 
+  // update the meltingsnowmangraphic
   function updateMeltingSnowmanGraphic() {
     const meltingSnowmanContainer = document.querySelector('.MeltingSnowman');
     meltingSnowmanContainer.innerHTML = `<img src="path/MeltingSnowman${imageCount}.png" alt="MeltingSnowman ${imageCount}">`;
     imageCount++;
   }
+
+  // Check if the game has been won or lost
+  function checkWinOrLose() {
+    if (guessedLetters.join('') === wordToGuess) {
+      const messageContainer = document.querySelector('.message');
+      messageContainer.innerText = 'You win!';
+      const letterButtons = document.querySelectorAll('.letters button');
+      letterButtons.forEach(button => {
+        button.disabled = true;
+        button.removeEventListener('click', handleGuess);
+      });
+    } else if (wrongGuesses >= maxWrongGuesses) {
+      const messageContainer = document.querySelector('.message');
+      messageContainer.innerText = `You lose! The word was "${wordToGuess}".`;
+      const meltingSnowmanContainer = document.querySelector('.MeltingSnowman');
+      meltingSnowmanContainer.innerHTML = `<img src="images/gameover.png" alt="gameover">`;
+      const letterButtons = document.querySelectorAll('.letters button');
+      letterButtons.forEach(button => {
+        button.disabled = true;
+        button.removeEventListener('click', handleGuess);
+      });
+    }
+  }
+
+  // Initialize the game when the page loads
+window.addEventListener('load', initializeGame);
